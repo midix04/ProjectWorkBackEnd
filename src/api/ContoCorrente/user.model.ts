@@ -8,7 +8,7 @@ const ContoCorrenteSchema = new Schema<ContoCorrente>({
     IBAN: String,
     email: String
 },{
-  //non salvo la versione   
+  //non salvo la versione  aiuto commit prova
   versionKey: false
 });
 
