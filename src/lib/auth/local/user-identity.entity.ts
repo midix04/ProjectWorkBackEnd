@@ -1,4 +1,4 @@
-import { ContoCorrente } from "../../../api/user/user.entity"
+import { ContoCorrente } from "../../../api/ContoCorrente/user.entity"
 
 export type UserIdentity = {
     id: string,

@@ -1,22 +1,23 @@
-import { Contains, IsDate, IsDateString, IsEmail, IsIn, IsString, IsStrongPassword, IsUrl, Matches, Min, MinLength } from "class-validator";
-import { isDate, matches } from "lodash";
+import { IsDateString, IsEmail, IsIn, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class AddUserDTO {
 
     @IsString()
+    @IsNotEmpty()
     NomeTitolare!: string;
     @IsString()
+    @IsNotEmpty()
     CognomeTitolare!: string;
+
     @IsEmail()
+    @IsNotEmpty()
     Email!: string;
     
-    @Min(8)
+    @MinLength(8)
     password!: string;
 
-    @IsString()
-    IBAN!: string;
-
     @IsDateString()
+    @IsNotEmpty()
     DataApertuta!: Date
 
 }

@@ -1,21 +1,27 @@
 import { NextFunction, Request, Response } from "express";
 import { TypedRequest } from "../../lib/typed-request.interface";
 import { AddUserDTO } from "./auth.dto";
-import userSrv, { UserExistsError } from "../user/user.service";
-import { omit, pick } from "lodash";
-import passport from "passport";
+import userSrv, { UserExistsError } from "../ContoCorrente/user.service";
+import { omit, pick, random } from "lodash";
+import passport, { use } from "passport";
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from "../../lib/auth/jwt/jwt-strategy";
+import { IBAN } from "ibankit";
 
-export const add = async (
+export const register = async (
     req: TypedRequest<AddUserDTO>,
     res: Response,
     next: NextFunction
 ) => {
     try {
-        const userData = omit(req.body, 'Email', 'password');
+        const userData = omit(req.body, 'password');
         const credentialsData = pick(req.body, 'Email', 'password');
-        const newUser = await userSrv.addContoCorrente(userData, credentialsData);
+        const iban = IBAN.random();
+        const userDataObj = {
+            ...userData,
+            IBAN: iban.toString()
+        }
+        const newUser = await userSrv.addContoCorrente(userDataObj, credentialsData);
         res.status(201).json(newUser);
     } catch(err) {
         if (err instanceof UserExistsError) {

@@ -4,4 +4,5 @@ export type ContoCorrente = {
     NomeTitolare: string;
     DataApertuta: Date;
     IBAN: string;
+    Email: string
 }

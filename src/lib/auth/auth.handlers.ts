@@ -1,7 +1,7 @@
 import  './local/local-strategy';
 import './jwt/jwt-strategy';
 
-import { ContoCorrente as iUser } from '../../api/user/user.entity';
+import { ContoCorrente as iUser } from '../../api/ContoCorrente/user.entity';
 
 declare global {
     namespace Express {

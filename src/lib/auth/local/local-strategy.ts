@@ -22,7 +22,6 @@ passport.use(
 
             const obj = {
              ...identity.toObject().ContoCorrente,
-             username: Email,
              password: identity.credentials.hashedPassword
             };
             if (match) {

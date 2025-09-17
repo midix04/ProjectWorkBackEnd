@@ -6,6 +6,7 @@ const ContoCorrenteSchema = new Schema<ContoCorrente>({
     NomeTitolare: String,
     DataApertuta: Date,
     IBAN: String,
+    Email: String
 },{
   //non salvo la versione   
   versionKey: false
