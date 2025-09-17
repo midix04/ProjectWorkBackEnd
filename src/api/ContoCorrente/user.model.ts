@@ -2,9 +2,9 @@ import { Schema, model } from 'mongoose';
 import { ContoCorrente } from './user.entity';
 
 const ContoCorrenteSchema = new Schema<ContoCorrente>({
-    CognomeTitolare: String,
-    NomeTitolare: String,
-    DataApertuta: Date,
+    cognomeTitolare: String,
+    nomeTitolare: String,
+    dataApertuta: Date,
     IBAN: String,
     Email: String
 },{
@@ -32,7 +32,7 @@ ContoCorrenteSchema.set('toObject', {
 });
 
 ContoCorrenteSchema.virtual('fullName').get(function() {
-    return `${this.NomeTitolare} ${this.CognomeTitolare}`;
+    return `${this.nomeTitolare} ${this.cognomeTitolare}`;
 })
 
 export const ContoCorrenteModel = model<ContoCorrente>('TContoCorrente', ContoCorrenteSchema);

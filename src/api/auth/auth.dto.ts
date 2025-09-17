@@ -4,10 +4,10 @@ export class AddUserDTO {
 
     @IsString()
     @IsNotEmpty()
-    NomeTitolare!: string;
+    nomeTitolare!: string;
     @IsString()
     @IsNotEmpty()
-    CognomeTitolare!: string;
+    cognomeTitolare!: string;
 
     @IsEmail()
     @IsNotEmpty()
@@ -15,10 +15,6 @@ export class AddUserDTO {
     
     @MinLength(8)
     password!: string;
-
-    @IsDateString()
-    @IsNotEmpty()
-    DataApertuta!: Date
 
 }
 

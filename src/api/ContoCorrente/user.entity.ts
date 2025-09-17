@@ -1,8 +1,8 @@
 export type ContoCorrente = {
-    ContoCorrenteID?: string;
-    CognomeTitolare: string;
-    NomeTitolare: string;
-    DataApertuta: Date;
+    contoCorrenteID?: string;
+    cognomeTitolare: string;
+    nomeTitolare: string;
+    dataApertuta: Date;
     IBAN: string;
     Email: string
 }

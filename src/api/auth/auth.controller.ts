@@ -17,11 +17,14 @@ export const register = async (
         const userData = omit(req.body, 'password');
         const credentialsData = pick(req.body, 'Email', 'password');
         const iban = IBAN.random();
+        const date = new Date()
         const userDataObj = {
             ...userData,
+            dataApertuta: date,
             IBAN: iban.toString()
         }
         const newUser = await userSrv.addContoCorrente(userDataObj, credentialsData);
+
         res.status(201).json(newUser);
     } catch(err) {
         if (err instanceof UserExistsError) {
