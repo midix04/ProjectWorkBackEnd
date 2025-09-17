@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 passport.use(
     new LocalStrategy(
     {
-        usernameField: 'Email',
+        usernameField: 'email',
         passwordField: 'password',
         session: false
     },
@@ -14,7 +14,7 @@ passport.use(
         try {
             const identity = await UserIdentityModel.findOne({'credentials.Email': Email});
             if (!identity) {
-                done(null, false, { message: `Email ${Email} not found` });
+                done(null, false, { message: `email ${Email} not found` });
                 return;
             }
 

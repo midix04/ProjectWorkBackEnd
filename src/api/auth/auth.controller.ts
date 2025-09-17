@@ -15,7 +15,7 @@ export const register = async (
 ) => {
     try {
         const userData = omit(req.body, 'password');
-        const credentialsData = pick(req.body, 'Email', 'password');
+        const credentialsData = pick(req.body, 'email', 'password');
         const iban = IBAN.random();
         const date = new Date()
         const userDataObj = {

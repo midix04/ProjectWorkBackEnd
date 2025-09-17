@@ -11,7 +11,7 @@ export class AddUserDTO {
 
     @IsEmail()
     @IsNotEmpty()
-    Email!: string;
+    email!: string;
     
     @MinLength(8)
     password!: string;
