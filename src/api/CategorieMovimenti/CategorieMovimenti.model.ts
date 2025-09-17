@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
 import { Schema, model } from 'mongoose';
-import { CategorieMovimenti } from './movimenti.entity';
+import { CategorieMovimenti } from './CategorieMovimenti.entity';
 
 
 const CategorieMovimentiSchema = new Schema<CategorieMovimenti>({

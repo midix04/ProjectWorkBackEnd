@@ -1,4 +1,4 @@
-import { Double } from "mongoose";
+import { Double, ObjectId } from "mongoose";
 
 export type ContoCorrente = {
     contoCorrenteID?: string;

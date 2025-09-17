@@ -1,11 +1,12 @@
 import { Double } from "mongoose";
 import { ContoCorrente } from "../ContoCorrente/user.entity";
+import { CategorieMovimenti } from "../CategorieMovimenti/CategorieMovimenti.entity";
 
 export type MovimentiEntity = {
-    movimentoID: string,
-    contoCorrente: ContoCorrente,
+    movimentoID?: string,
+    contoCorrente?: ContoCorrente,
     data: Date,
-    saldo: Float32Array,
+    saldo: number,
     categoriaMovimento: string,
     descrizioneEstesa: string;
 }
