@@ -23,13 +23,25 @@ export const AddMov = async (
 }
 
 
-export const MovLast5List = async (
-    req: Request, 
-    res: Response, 
-    next: NextFunction) => {
-    
-    res.json(req.user);
-}
+
+export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const contoCorrenteID = req.user?.contoCorrenteID; 
+    const n = parseInt(req.query.n as string) || 5;
+    const { movimenti, saldoFinale } = await MovSrv.getLastNMovimenti(contoCorrenteID!, n);
+
+    res.json({
+      movimenti,
+      saldoFinale,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const MonNList = async (
     req: Request, 
