@@ -10,7 +10,6 @@ export const me = async (
     next: NextFunction) => {
       console.log((req.user as any).id)
       const saldo = await MovSrv.getLastSaldo((req.user as any).id)
-      console.log(saldo)
       const obj = omit(req.user as ContoCorrente, 'id')
       const resObj = {
         ...obj,
