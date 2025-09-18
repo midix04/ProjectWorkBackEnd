@@ -15,6 +15,7 @@ export class MovService {
         const newContoCorrente = await movimentiModel.create(movimento);
         return newContoCorrente;
     }
+
 async getLastNMovimenti(contoCorrenteID: string, n: number): Promise<{ movimenti: any[]; saldoFinale: number }> {
     const movimenti = await movimentiModel.find({ contoCorrenteID: contoCorrenteID })
         .sort({ data: -1 })
@@ -23,7 +24,7 @@ async getLastNMovimenti(contoCorrenteID: string, n: number): Promise<{ movimenti
         .lean();
 
     const saldoFinale = movimenti.length > 0 ? movimenti[0].saldo : 0;
-
+    //ciaone
     return { movimenti, saldoFinale };
 }
 }
