@@ -13,7 +13,7 @@ export const AddMov = async (
 ) => {
     try {
         const mov = omit(req.body, 'email');
-        const movEmail = req.body.email;
+        const movEmail = (req.user as any).email
         const date = new Date();
         const saldo = await MovSrv.getLastSaldo((req.user as any).id);
         const movObj = {
@@ -39,11 +39,12 @@ export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   try {
   const contoCorrenteID = (req.user as any)?.id;
     const n = parseInt(req.query.n as string) || 5;
-    const { movimenti, saldoFinale } = await MovSrv.getLastNMovimenti(contoCorrenteID!.toString(), n);
+    const { movimenti } = await MovSrv.getLastNMovimenti(contoCorrenteID!.toString(), n);
+    const saldo = await MovSrv.getLastSaldo((req.user as any).id);
 
     res.json({
       movimenti,
-      saldoFinale,
+      saldo,
     });
   } catch (err) {
     next(err);
@@ -60,15 +61,17 @@ export const MovCatList = async (
     const n = parseInt(req.query.n as string) || 5;
     const categoriaMovimento = req.query.categoria as string | undefined; 
 
-    const { movimenti} = await MovSrv.getLastNMovimenti2(
-      contoCorrente!.toString(),
-      n,
-      categoriaMovimento
-    );
+    const { movimenti } = await MovSrv.getLastNMovimenti(contoCorrente!.toString(), n);
+    const saldo = await MovSrv.getLastSaldo((req.user as any).id);
+
+    const movimentiFiltrati = movimenti.filter(mov => 
+          (mov.categoriaMovimento as any).CategoriaMovimentoID === categoriaMovimento
+        )
+
 
     res.json({
-      movimenti,
-      
+      movimenti: movimentiFiltrati,
+      saldoFinale: saldo
     });
   } catch (err) {
     next(err);

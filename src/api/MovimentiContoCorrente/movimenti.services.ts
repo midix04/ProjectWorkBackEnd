@@ -6,114 +6,98 @@ import { CategorieMovModel } from "../CategorieMovimenti/CategorieMovimenti.mode
 import { CategorieMovimenti } from "../CategorieMovimenti/CategorieMovimenti.entity";
 
 export class MovService {
-
-async addMovimento(movimento: MovimentiEntity, Email: string): Promise<MovimentiEntity> {
+  async addMovimento(
+    movimento: MovimentiEntity,
+    Email: string,
+  ): Promise<MovimentiEntity> {
     try {
-        const identity = await UserIdentityModel.findOne({ 'credentials.Email': Email });
-        if (!identity) throw new Error(`Email ${Email} not found`);
+      const identity = await UserIdentityModel.findOne({
+        "credentials.Email": Email,
+      });
+      if (!identity) throw new Error(`Email ${Email} not found`);
 
-        movimento.contoCorrente = identity.ContoCorrente;  
+      movimento.contoCorrente = identity.ContoCorrente;
 
-        const tipoMovimento = await CategorieMovModel.findOne({ 'CategoriaMovimentoID': movimento.categoriaMovimento });
-        if (!tipoMovimento) throw new Error(`conto not found`);
+      const tipoMovimento = await CategorieMovModel.findOne({
+        CategoriaMovimentoID: movimento.categoriaMovimento,
+      });
+      if (!tipoMovimento) throw new Error(`conto not found`);
 
-        movimento.categoriaMovimento = tipoMovimento.id;
-        
-        let saldo = 0
-        if(!(tipoMovimento.CategoriaMovimentoID == "4")){
-             saldo = await this.getLastSaldo((identity.ContoCorrente as any).id);
+      movimento.categoriaMovimento = tipoMovimento.id;
+
+      let saldo = 0;
+      if (!(tipoMovimento.CategoriaMovimentoID == "4")) {
+        saldo = await this.getLastSaldo((identity.ContoCorrente as any).id);
+      }
+
+      if (tipoMovimento.tipologia == false) {
+        saldo -= movimento.importo;
+        movimento.saldo -= movimento.importo;
+        if (saldo < 0) {
+          return Promise.reject(new Error(`Soldi non sufficienti nel Conto`));
         }
+      } else {
+        movimento.saldo += movimento.importo;
+      }
 
-        if(tipoMovimento.tipologia == false) { 
-            saldo -= movimento.importo;
-             movimento.saldo -= movimento.importo
-            if(saldo < 0){
-                 return Promise.reject(new Error(`Soldi non sufficienti nel Conto`));
-            }
-        }else{
-            movimento.saldo += movimento.importo
-        }
+      const newContoCorrente = await movimentiModel.create(movimento);
 
-        const newContoCorrente = await movimentiModel.create(movimento);
-
-        return (await newContoCorrente.populate('categoriaMovimento'))
-               .populate('contoCorrente');
+      return (await newContoCorrente.populate("categoriaMovimento")).populate(
+        "contoCorrente",
+      );
     } catch (err) {
-        console.error(err);
-        throw err; 
+      console.error(err);
+      throw err;
     }
-}
-
-
-
-async getLastNMovimenti(contoCorrente: string | undefined, n: number): Promise<{ movimenti: any[]; saldoFinale: number }> {
-    const movimenti = await movimentiModel.find({ contoCorrente: contoCorrente })
-        .sort({ data: -1 })
-        .limit(n)
-        .select("data importo saldo CategoriaMovimento descrizioneEstesa")
-        .lean();
-
-    const saldoFinale = movimenti.length > 0 ? movimenti[0].saldo : 0;
-    //ciaone
-    return { movimenti, saldoFinale };
-}
-
-
-async getLastNMovimenti2(
-  contoCorrente: string | undefined,
-  n: number,
-  categoriaMovimento?: string
-): Promise<{ movimenti: any[]; saldoFinale: number }> {
-  const query: any = { contoCorrente };
-
-  if (categoriaMovimento) {
-    query.categoriaMovimento = categoriaMovimento;
   }
 
-  const movimenti = await movimentiModel.find(query)
-    .sort({ data: -1 })
-    .limit(n)
-    .select("data importo categoriaMovimento descrizioneEstesa")
-    .lean();
+  async getLastNMovimenti(
+    contoCorrente: string | undefined,
+    n: number,
+  ): Promise<{ movimenti: MovimentiEntity[] }> {
+    const movimenti = await movimentiModel
+      .find({ contoCorrente: contoCorrente })
+      .sort({ data: -1 })
+      .limit(n)
+      .select("data importo saldo CategoriaMovimento descrizioneEstesa")
+      .lean()
+      .populate("categoriaMovimento");
 
-  const saldoFinale = movimenti.length > 0 ? movimenti[0].saldo : 0;
-
-  return { movimenti, saldoFinale };
-}
-
-
-async getMovimentiBetweenDates(
-  contoCorrente: string,
-  startDate: Date,
-  endDate: Date,
-  n: number
-): Promise<any[]> {
-  const movimenti = await movimentiModel.find({
-    contoCorrente: contoCorrente,
-    data: { $gte: startDate, $lte: endDate }
-  })
-    .sort({ data: -1 }) 
-    .limit(n)
-    .select("data importo categoriaMovimento") 
-    .lean();
-
-  return movimenti;
-}
+    return { movimenti };
+  }
 
 
 
-async getLastSaldo(contoCorrente: string) {
+  async getMovimentiBetweenDates(
+    contoCorrente: string,
+    startDate: Date,
+    endDate: Date,
+    n: number,
+  ): Promise<any[]> {
+    const movimenti = await movimentiModel
+      .find({
+        contoCorrente: contoCorrente,
+        data: { $gte: startDate, $lte: endDate },
+      })
+      .sort({ data: -1 })
+      .limit(n)
+      .select("data importo categoriaMovimento")
+      .lean().populate("categoriaMovimento");
+
+    return movimenti;
+  }
+
+  async getLastSaldo(contoCorrente: string) {
     const saldo = await movimentiModel
-        .findOne({ contoCorrente: new Types.ObjectId(contoCorrente) }) 
-        .sort({ data: -1 }) 
-        .populate('contoCorrente') 
-        .exec();
-    if(!saldo){
-        throw new Error(`Ultimo saldo non trovato`);
+      .findOne({ contoCorrente: new Types.ObjectId(contoCorrente) })
+      .sort({ data: -1 })
+      .populate("contoCorrente")
+      .exec();
+    if (!saldo) {
+      throw new Error(`Ultimo saldo non trovato`);
     }
     return saldo?.saldo;
-}
-
+  }
 }
 
 export default new MovService();
