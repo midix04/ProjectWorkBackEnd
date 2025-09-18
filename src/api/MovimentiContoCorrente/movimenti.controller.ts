@@ -30,7 +30,7 @@ export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   next: NextFunction
 ) => {
   try {
-  const contoCorrenteID = (req.user as ContoCorrente)?.contoCorrenteID;
+      const contoCorrente = (req.user as any).id;
     const n = parseInt(req.query.n as string) || 5;
     const { movimenti, saldoFinale } = await MovSrv.getLastNMovimenti(contoCorrente!.toString(), n);
 
@@ -43,35 +43,31 @@ export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const MonNList = async (
-    req: Request, 
-    res: Response, 
-    next: NextFunction) => {
-    
-    res.json(req.user);
-}
 export const MovCatList = async (
-    req: Request, 
-    res: Response, 
-    next: NextFunction) => {
-    
-    res.json(req.user);
-}
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const contoCorrente = (req.user as any).id;
+    const n = parseInt(req.query.n as string) || 5;
+    const categoriaMovimento = req.query.categoria as string | undefined; 
+
+    const { movimenti} = await MovSrv.getLastNMovimenti2(
+      contoCorrente!.toString(),
+      n,
+      categoriaMovimento
+    );
+
+    res.json({
+      movimenti,
+      
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const MovBtwDatesList = async (
     req: Request, 
     res: Response, 
