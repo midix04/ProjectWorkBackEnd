@@ -5,6 +5,5 @@ export class MovimentiDto {
   importo: number;
   categoriaMovimento: string;
   descrizioneEstesa: string;
-  ContoCorrente: Types.ObjectId | string; 
   email: string
 }

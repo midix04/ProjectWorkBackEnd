@@ -18,8 +18,11 @@ async addMovimento(movimento: MovimentiEntity, Email: string): Promise<Movimenti
         if (!tipoMovimento) throw new Error(`conto not found`);
 
         movimento.categoriaMovimento = tipoMovimento.id;
-
-        let saldo = await this.getLastSaldo((identity.ContoCorrente as any).id);
+        
+        let saldo = 0
+        if(!(tipoMovimento.CategoriaMovimentoID == "4")){
+             saldo = await this.getLastSaldo((identity.ContoCorrente as any).id);
+        }
 
         if(tipoMovimento.tipologia == false) { 
             saldo -= movimento.importo;

@@ -19,7 +19,8 @@ export const AddMov = async (
         const movObj = {
             ...mov,
             data: date,
-            saldo: saldo
+            saldo: saldo,
+            ContoCorrente: (req.user as any).id
         };
         const newMov = await MovSrv.addMovimento(movObj, movEmail);
         res.status(201).json(newMov);
