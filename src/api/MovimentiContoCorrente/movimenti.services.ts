@@ -17,11 +17,11 @@ export class MovService {
         return newContoCorrente;
     }
 
-async getLastNMovimenti(contoCorrenteID: string | undefined, n: number): Promise<{ movimenti: any[]; saldoFinale: number }> {
-    const movimenti = await movimentiModel.find({ contoCorrenteID: contoCorrenteID })
+async getLastNMovimenti(contoCorrente: string | undefined, n: number): Promise<{ movimenti: any[]; saldoFinale: number }> {
+    const movimenti = await movimentiModel.find({ contoCorrente: contoCorrente })
         .sort({ data: -1 })
         .limit(n)
-        .select("data importo saldo CategoriaMovimentoID descrizioneEstesa")
+        .select("data importo saldo CategoriaMovimento descrizioneEstesa")
         .lean();
 
     const saldoFinale = movimenti.length > 0 ? movimenti[0].saldo : 0;
@@ -29,9 +29,9 @@ async getLastNMovimenti(contoCorrenteID: string | undefined, n: number): Promise
     return { movimenti, saldoFinale };
 }
 
-async getLastSaldo(contoCorrenteID: string) {
+async getLastSaldo(contoCorrente: string) {
     const saldo = await movimentiModel
-        .findOne({ contoCorrente: new Types.ObjectId(contoCorrenteID) }) 
+        .findOne({ contoCorrente: new Types.ObjectId(contoCorrente) }) 
         .sort({ data: -1 }) 
         .populate('contoCorrente') 
         .exec();
