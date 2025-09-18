@@ -17,7 +17,7 @@ export const AddMov = async (
         ...mov,
         data: date
     }
-    const newMov = await MovSrv.addContoCorrente(movObj, movEmail)
+    const newMov = await MovSrv.addMovimento(movObj, movEmail)
 
     res.json(newMov);
 }
@@ -30,7 +30,7 @@ export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   next: NextFunction
 ) => {
   try {
-      const contoCorrente = (req.user as any).id;
+  const contoCorrenteID = (req.user as ContoCorrente)?.contoCorrenteID;
     const n = parseInt(req.query.n as string) || 5;
     const { movimenti, saldoFinale } = await MovSrv.getLastNMovimenti(contoCorrente!.toString(), n);
 

@@ -7,6 +7,7 @@ import passport, { use } from "passport";
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from "../../lib/auth/jwt/jwt-strategy";
 import { IBAN } from "ibankit";
+import MovSrv from "../MovimentiContoCorrente/movimenti.services"
 
 export const register = async (
     req: TypedRequest<AddUserDTO>,
@@ -24,6 +25,16 @@ export const register = async (
             IBAN: iban.toString()
         }
         const newUser = await userSrv.addContoCorrente(userDataObj, credentialsData);
+        
+       const movObj=  {
+            "data": date,
+            "saldo": 0,
+            "categoriaMovimento": "Apertura Conto",
+             "descrizioneEstesa": "Primo movimento per l'apertura del conto",
+            "ContoCorrente": (newUser as any).id,
+        }
+
+        const newMov = await MovSrv.addMovimento(movObj,  (newUser as any).email)
 
         res.status(201).json(newUser);
     } catch(err) {
