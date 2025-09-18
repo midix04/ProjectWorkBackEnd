@@ -4,6 +4,7 @@ import { MovimentiDto } from "./movimenti.dto";
 import { TypedRequest } from "../../lib/typed-request.interface";
 import MovSrv from "../MovimentiContoCorrente/movimenti.services"
 import { omit, pick } from "lodash";
+import { ContoCorrente } from "../ContoCorrente/user.entity";
 
 export const AddMov = async (
     req: TypedRequest<MovimentiDto>,
@@ -30,9 +31,9 @@ export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   next: NextFunction
 ) => {
   try {
-  const contoCorrenteID = (req.user as ContoCorrente)?.contoCorrenteID;
+  const contoCorrenteID = (req.user as any)?.id;
     const n = parseInt(req.query.n as string) || 5;
-    const { movimenti, saldoFinale } = await MovSrv.getLastNMovimenti(contoCorrente!.toString(), n);
+    const { movimenti, saldoFinale } = await MovSrv.getLastNMovimenti(contoCorrenteID!.toString(), n);
 
     res.json({
       movimenti,
