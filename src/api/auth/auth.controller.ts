@@ -27,9 +27,10 @@ export const register = async (
         const newUser = await userSrv.addContoCorrente(userDataObj, credentialsData);
         
        const movObj=  {
+            "importo": 0,
             "data": date,
             "saldo": 0,
-            "categoriaMovimento": "Apertura Conto",
+            "categoriaMovimento": "4",
              "descrizioneEstesa": "Primo movimento per l'apertura del conto",
             "ContoCorrente": (newUser as any).id,
         }

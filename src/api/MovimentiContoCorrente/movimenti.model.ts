@@ -3,14 +3,16 @@ import { MovimentiEntity } from './movimenti.entity';
 
 const movimentiEntitySchema = new Schema<MovimentiEntity>({
     data: Date,
+    importo:  Number,
     saldo: Number,
-    categoriaMovimento: String,
+    categoriaMovimento: { type: Schema.Types.ObjectId, ref: 'CategorieMovimenti' },
     descrizioneEstesa: String,
     contoCorrente: { type: Schema.Types.ObjectId, ref: 'TContoCorrente' },
     });
 
 movimentiEntitySchema.pre('findOne', function(next) {
     this.populate('contoCorrente');
+    this.populate('categoriaMovimento')
     next();
 })
 

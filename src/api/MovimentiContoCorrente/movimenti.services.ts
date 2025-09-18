@@ -2,20 +2,46 @@ import { ObjectId, Types } from "mongoose";
 import { UserIdentityModel } from "../../lib/auth/local/user-identity.model";
 import { MovimentiEntity } from "./movimenti.entity";
 import { movimentiModel } from "./movimenti.model";
+import { CategorieMovModel } from "../CategorieMovimenti/CategorieMovimenti.model";
+import { CategorieMovimenti } from "../CategorieMovimenti/CategorieMovimenti.entity";
 
 export class MovService {
 
-    async addMovimento(movimento: MovimentiEntity, Email: string): Promise<MovimentiEntity> {
+async addMovimento(movimento: MovimentiEntity, Email: string): Promise<MovimentiEntity> {
+    try {
         const identity = await UserIdentityModel.findOne({ 'credentials.Email': Email });
-        console.log(identity)
-        if (!identity) {
-            throw new Error(`Email ${Email} not found`);
-        }
+        if (!identity) throw new Error(`Email ${Email} not found`);
+
         movimento.contoCorrente = identity.ContoCorrente;  
 
+        const tipoMovimento = await CategorieMovModel.findOne({ 'CategoriaMovimentoID': movimento.categoriaMovimento });
+        if (!tipoMovimento) throw new Error(`conto not found`);
+
+        movimento.categoriaMovimento = tipoMovimento.id;
+
+        let saldo = await this.getLastSaldo((identity.ContoCorrente as any).id);
+
+        if(tipoMovimento.tipologia == false) { 
+            saldo -= movimento.importo;
+             movimento.saldo -= movimento.importo
+            if(saldo < 0){
+                 return Promise.reject(new Error(`Soldi non sufficienti nel Conto`));
+            }
+        }else{
+            movimento.saldo += movimento.importo
+        }
+
         const newContoCorrente = await movimentiModel.create(movimento);
-        return newContoCorrente;
+
+        return (await newContoCorrente.populate('categoriaMovimento'))
+               .populate('contoCorrente');
+    } catch (err) {
+        console.error(err);
+        throw err; 
     }
+}
+
+
 
 async getLastNMovimenti(contoCorrente: string | undefined, n: number): Promise<{ movimenti: any[]; saldoFinale: number }> {
     const movimenti = await movimentiModel.find({ contoCorrente: contoCorrente })
@@ -35,7 +61,9 @@ async getLastSaldo(contoCorrente: string) {
         .sort({ data: -1 }) 
         .populate('contoCorrente') 
         .exec();
-
+    if(!saldo){
+        throw new Error(`Ultimo saldo non trovato`);
+    }
     return saldo?.saldo;
 }
 

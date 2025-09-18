@@ -4,6 +4,7 @@ import { CategorieMovimenti } from './CategorieMovimenti.entity';
 
 
 const CategorieMovimentiSchema = new Schema<CategorieMovimenti>({
+    CategoriaMovimentoID: String,
     NomeCategoria: String,
     tipologia: Boolean
 },{
@@ -31,4 +32,8 @@ CategorieMovimentiSchema.set('toObject', {
 });
 
 
-export const ContoCorrenteModel = model<CategorieMovimenti>('TCategorieMovimenti', CategorieMovimentiSchema);
+export const CategorieMovModel = model<CategorieMovimenti>(
+  'CategorieMovimenti',  
+  CategorieMovimentiSchema,
+  'tipiMovimentiEntities'
+);

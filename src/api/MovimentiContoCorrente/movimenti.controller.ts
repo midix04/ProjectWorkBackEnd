@@ -9,19 +9,24 @@ import { ContoCorrente } from "../ContoCorrente/user.entity";
 export const AddMov = async (
     req: TypedRequest<MovimentiDto>,
     res: Response, 
-    next: NextFunction) => {
-
-    const mov = omit(req.body, 'email')
-    const movEmail = req.body.email
-    const date = new Date()
-    const movObj = {
-        ...mov,
-        data: date
+    next: NextFunction
+) => {
+    try {
+        const mov = omit(req.body, 'email');
+        const movEmail = req.body.email;
+        const date = new Date();
+        const saldo = await MovSrv.getLastSaldo((req.user as any).id);
+        const movObj = {
+            ...mov,
+            data: date,
+            saldo: saldo
+        };
+        const newMov = await MovSrv.addMovimento(movObj, movEmail);
+        res.status(201).json(newMov);
+    } catch (err: any) {
+        res.status(400).json({ error: err.message });
     }
-    const newMov = await MovSrv.addMovimento(movObj, movEmail)
-
-    res.json(newMov);
-}
+};
 
 
 
