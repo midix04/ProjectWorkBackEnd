@@ -55,6 +55,50 @@ async getLastNMovimenti(contoCorrente: string | undefined, n: number): Promise<{
     return { movimenti, saldoFinale };
 }
 
+
+async getLastNMovimenti2(
+  contoCorrente: string | undefined,
+  n: number,
+  categoriaMovimento?: string
+): Promise<{ movimenti: any[]; saldoFinale: number }> {
+  const query: any = { contoCorrente };
+
+  if (categoriaMovimento) {
+    query.categoriaMovimento = categoriaMovimento;
+  }
+
+  const movimenti = await movimentiModel.find(query)
+    .sort({ data: -1 })
+    .limit(n)
+    .select("data importo categoriaMovimento descrizioneEstesa")
+    .lean();
+
+  const saldoFinale = movimenti.length > 0 ? movimenti[0].saldo : 0;
+
+  return { movimenti, saldoFinale };
+}
+
+
+async getMovimentiBetweenDates(
+  contoCorrente: string,
+  startDate: Date,
+  endDate: Date,
+  n: number
+): Promise<any[]> {
+  const movimenti = await movimentiModel.find({
+    contoCorrente: contoCorrente,
+    data: { $gte: startDate, $lte: endDate }
+  })
+    .sort({ data: -1 }) 
+    .limit(n)
+    .select("data importo categoriaMovimento") 
+    .lean();
+
+  return movimenti;
+}
+
+
+
 async getLastSaldo(contoCorrente: string) {
     const saldo = await movimentiModel
         .findOne({ contoCorrente: new Types.ObjectId(contoCorrente) }) 
