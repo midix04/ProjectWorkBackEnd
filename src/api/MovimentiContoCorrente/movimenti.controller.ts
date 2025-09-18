@@ -70,10 +70,27 @@ export const MovCatList = async (
 };
 
 export const MovBtwDatesList = async (
-    req: Request, 
-    res: Response, 
-    next: NextFunction) => {
-    
-    res.json(req.user);
-}
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const contoCorrente = (req.user as any).id;
+    const n = parseInt(req.query.n as string) || 5;
+
+    const startDate = new Date(req.query.startDate as string);
+    const endDate = new Date(req.query.endDate as string);
+
+    const movimenti = await MovSrv.getMovimentiBetweenDates(
+      contoCorrente!.toString(),
+      startDate,
+      endDate,
+      n
+    );
+
+    res.json(movimenti);
+  } catch (err) {
+    next(err);
+  }
+};
 
