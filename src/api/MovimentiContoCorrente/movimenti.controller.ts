@@ -23,6 +23,27 @@ export const AddMov = async (
             ContoCorrente: (req.user as any).id
         };
         const newMov = await MovSrv.addMovimento(movObj, movEmail);
+        console.log("AAAAAAAAAAAAAAAAAAAAAA", (newMov.categoriaMovimento as any).CategoriaMovimentoID)
+        if((newMov.categoriaMovimento as any).CategoriaMovimentoID == 3 && newMov){
+          const iban = (req.body.ibanDestinatario)
+          console.log(iban)
+          if(iban){
+          const destinarioEmail = await MovSrv.findUser(iban)
+          if(destinarioEmail){
+         const saldiBen = await MovSrv.getLastSaldo(destinarioEmail.id);
+          const movObj=  {
+            "importo": req.body.importo,
+            "data": date,
+            "saldo": saldiBen,
+            "categoriaMovimento": "2",
+             "descrizioneEstesa": "Bonifico in entrata",
+            "ContoCorrente": destinarioEmail._id
+        }
+        console.log("SDFDGOJFdgkesokigjofisgjrfgru")
+         await MovSrv.addMovimento(movObj, destinarioEmail.email);
+        }
+          }
+        }
         res.status(201).json(newMov);
     } catch (err: any) {
         res.status(400).json({ error: err.message });

@@ -4,6 +4,7 @@ import { MovimentiEntity } from "./movimenti.entity";
 import { movimentiModel } from "./movimenti.model";
 import { CategorieMovModel } from "../CategorieMovimenti/CategorieMovimenti.model";
 import { CategorieMovimenti } from "../CategorieMovimenti/CategorieMovimenti.entity";
+import { ContoCorrenteModel } from "../ContoCorrente/user.model";
 
 export class MovService {
   async addMovimento(
@@ -98,6 +99,12 @@ export class MovService {
     }
     return saldo?.saldo;
   }
+
+  async findUser(iban: string) {
+    const destinatario = await ContoCorrenteModel.findOne({ IBAN: iban }).select("email _id")
+    return destinatario;
+}
+
 }
 
 export default new MovService();

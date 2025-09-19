@@ -5,4 +5,5 @@ export class MovimentiDto {
   importo: number;
   categoriaMovimento: string;
   descrizioneEstesa: string;
+  ibanDestinatario?: string
 }
