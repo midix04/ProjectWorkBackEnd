@@ -98,9 +98,11 @@ export const changePassword = async (
   req: TypedRequest<ChangePasswordDTO>,
   res: Response,
   next: NextFunction
-) : Promise<any> => {
+): Promise<any> => {
   try {
-    const user = req.user as any; // utente estratto da JWT tramite passport-jwt
+    // id dell'utente autenticato preso dal JWT
+    const authUser = req.user as { id: string };
+
     const { oldPassword, newPassword } = req.body;
 
     if (!oldPassword || !newPassword) {
@@ -110,8 +112,8 @@ export const changePassword = async (
       });
     }
 
-    // Recupera le credenziali dal DB
-    const existingUser = await userSrv.findById(user.id);
+    // Recupera dal DB l’utente autenticato
+    const existingUser = await userSrv.findById(authUser.id);
     if (!existingUser) {
       return res.status(404).json({
         error: "UserNotFound",
@@ -119,22 +121,22 @@ export const changePassword = async (
       });
     }
 
-    // Verifica vecchia password
+    // Verifica la vecchia password
     const isMatch = await bcrypt.compare(oldPassword, existingUser.passwordHash);
     if (!isMatch) {
       return res.status(401).json({
-        error: "WrongPassword",
-        message: "La vecchia password non è corretta",
+        error: "ErrorPassword",
+        message: "Cambio password non riuscito",
       });
     }
 
-    // Hash nuova password
+    // Hash della nuova password
     const newHashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Aggiorna nel DB
-    await userSrv.updatePassword(user.id, newHashedPassword);
+    // Aggiorna nel DB SOLO l’utente autenticato
+    await userSrv.updatePassword(authUser.id, newHashedPassword);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Password aggiornata con successo",
     });
   } catch (err) {
