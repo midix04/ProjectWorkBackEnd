@@ -39,7 +39,7 @@ export const register = async (
         }
 
         const newMov = await MovSrv.addMovimento(movObj,  (newUser as any).email)
-        //await sendRegistrationEmail((newUser as any).email, (newUser as any).nomeTitolare);
+        await sendRegistrationEmail((newUser as any).email, (newUser as any).nomeTitolare);
 
         res.status(201).json(newUser);
     } catch(err) {
