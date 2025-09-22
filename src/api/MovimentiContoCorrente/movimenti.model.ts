@@ -5,7 +5,7 @@ const movimentiEntitySchema = new Schema<MovimentiEntity>({
     data: Date,
     importo:  Number,
     saldo: Number,
-    categoriaMovimento: { type: Schema.Types.ObjectId, ref: 'CategorieMovimenti' },
+    categoriaMovimento: { type: Schema.Types.ObjectId, ref: 'CategorieMovimenti', required:true },
     descrizioneEstesa: String,
     contoCorrente: { type: Schema.Types.ObjectId, ref: 'TContoCorrente' },
     });

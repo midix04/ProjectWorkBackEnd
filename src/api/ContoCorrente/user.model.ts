@@ -4,7 +4,7 @@ import { ContoCorrente } from './user.entity';
 const ContoCorrenteSchema = new Schema<ContoCorrente>({
     cognomeTitolare: String,
     nomeTitolare: String,
-    dataApertuta: Date,
+    dataApertura: Date,
     IBAN: String,
     email: String
 },{

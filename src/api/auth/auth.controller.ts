@@ -8,6 +8,9 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from "../../lib/auth/jwt/jwt-strategy";
 import { IBAN } from "ibankit";
 import MovSrv from "../MovimentiContoCorrente/movimenti.services"
+import { sendRegistrationEmail } from "./email.service";
+import bcrypt from "bcrypt";
+
 
 export const register = async (
     req: TypedRequest<AddUserDTO>,
@@ -21,7 +24,7 @@ export const register = async (
         const date = new Date()
         const userDataObj = {
             ...userData,
-            dataApertuta: date,
+            dataApertura: date,
             IBAN: iban.toString()
         }
         const newUser = await userSrv.addContoCorrente(userDataObj, credentialsData);
@@ -36,6 +39,7 @@ export const register = async (
         }
 
         const newMov = await MovSrv.addMovimento(movObj,  (newUser as any).email)
+        await sendRegistrationEmail((newUser as any).email, (newUser as any).nomeTitolare);
 
         res.status(201).json(newUser);
     } catch(err) {
@@ -83,3 +87,57 @@ export const login = async (
         }
     )(req, res, next);
 }
+
+
+interface ChangePasswordDTO {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const changePassword = async (
+  req: TypedRequest<ChangePasswordDTO>,
+  res: Response,
+  next: NextFunction
+) : Promise<any> => {
+  try {
+    const user = req.user as any; // utente estratto da JWT tramite passport-jwt
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        error: "ValidationError",
+        message: "Vecchia e nuova password sono obbligatorie",
+      });
+    }
+
+    // Recupera le credenziali dal DB
+    const existingUser = await userSrv.findById(user.id);
+    if (!existingUser) {
+      return res.status(404).json({
+        error: "UserNotFound",
+        message: "Utente non trovato",
+      });
+    }
+
+    // Verifica vecchia password
+    const isMatch = await bcrypt.compare(oldPassword, existingUser.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({
+        error: "WrongPassword",
+        message: "La vecchia password non è corretta",
+      });
+    }
+
+    // Hash nuova password
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Aggiorna nel DB
+    await userSrv.updatePassword(user.id, newHashedPassword);
+
+    res.status(200).json({
+      message: "Password aggiornata con successo",
+    });
+  } catch (err) {
+    next(err);
+  }
+};

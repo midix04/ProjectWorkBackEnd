@@ -4,9 +4,9 @@ import { CategorieMovimenti } from './CategorieMovimenti.entity';
 
 
 const CategorieMovimentiSchema = new Schema<CategorieMovimenti>({
-    CategoriaMovimentoID: String,
-    NomeCategoria: String,
-    tipologia: Boolean
+   CategoriaMovimentoID: { type: String, unique: true },
+    NomeCategoria: { type: String, required: true },
+    tipologia: { type: Boolean, required: true }
 },{
   //non salvo la versione  aiuto commit prova
   versionKey: false
