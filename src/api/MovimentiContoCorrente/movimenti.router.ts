@@ -1,12 +1,33 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../lib/auth/auth.middleware";
-import { MonNList, MovBtwDatesList, MovCatList, MovLast5List } from "./movimenti.Controller";
+import { AddMov, MovLast5List, MovCatList, MovBtwDatesList, exp1, exp2, exp3 } from "./movimenti.controller";
+import { logMiddleware } from "../../lib/logMiddleware";
+
 
 const router = Router();
 
-router.get('/MovLast5List', isAuthenticated, MovLast5List );
-router.get('/MonNList', isAuthenticated, MonNList );
-router.get('/MovCatList', isAuthenticated, MovCatList );
-router.get('/MovBtwDatesList', isAuthenticated, MovBtwDatesList );
-
+router.post(
+  "/AddMov",
+  isAuthenticated,
+  logMiddleware((req) => {
+    const cat = Number(req.body.categoriaMovimento);;
+    switch (cat) {
+      case 1:
+        return "Ricarica telefono";
+      case 2:
+        return "Prelievo effettuato";
+      case 3:
+        return "Bonifico in uscita";
+      default:
+        return "Movimento generico";
+    }
+  }),
+  AddMov
+);
+router.get('/MovLast5List', isAuthenticated, MovLast5List );// ricmov1
+router.get('/MovCatList', isAuthenticated, MovCatList );//ricmov2
+router.get('/MovBtwDatesList', isAuthenticated, MovBtwDatesList );//ricmov3
+router.get('/exp1', isAuthenticated, exp1 );
+router.get('/exp2', isAuthenticated, exp2 );
+router.get('/exp3', isAuthenticated, exp3 );
 export default router;
