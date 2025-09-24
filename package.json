@@ -2,12 +2,11 @@
   "name": "its_2426_esame_be",
   "version": "1.0.0",
   "main": "index.js",
-"scripts": {
-  "dev": "nodemon",
-  "build": "tsc",
-  "start": "node dist/index.js"
-},
-
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
   "author": "",
   "license": "ISC",
   "description": "",
@@ -27,6 +26,7 @@
     "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "mongodb": "^6.20.0",
     "mongoose": "^8.10.1",
     "morgan": "^1.10.0",
     "nodemailer": "^7.0.6",
