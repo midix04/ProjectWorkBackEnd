@@ -29,7 +29,7 @@ export const AddMov = async (
         // IN CASO sia un bonifico in uscita
         const iban = (req.body.ibanDestinatario)
         let destinarioEmail 
-        if((req.body as any).categoriaMovimento == 3){
+        if(req.body.categoriaMovimento == "3"){
         if(iban){
           const iban = (req.body.ibanDestinatario)
           destinarioEmail = await MovSrv.findUser(iban!)
