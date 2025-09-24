@@ -101,7 +101,8 @@ export class MovService {
   }
 
   async findUser(iban: string) {
-    if (!iban || iban.trim() === "") {
+    console.log("IBAN", iban)
+    if (iban == "" || iban.trim() === "") {
     throw new Error("IBAN non valido");
   }
     const destinatario = await ContoCorrenteModel.findOne({ IBAN: iban }).select("email _id")
