@@ -102,7 +102,7 @@ export class MovService {
 
   async findUser(iban: string) {
     const destinatario = await ContoCorrenteModel.findOne({ IBAN: iban }).select("email _id")
-    if(!destinatario){
+    if(!destinatario || iban == ""){
       throw new Error(`Iban non trovato`);
     }
     return destinatario;
