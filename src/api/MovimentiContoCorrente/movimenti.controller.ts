@@ -34,9 +34,6 @@ export const AddMov = async (
           const iban = (req.body.ibanDestinatario)
           destinarioEmail = await MovSrv.findUser(iban!)
         }
-        if(!destinarioEmail){
-          return res.status(404).json("Iban non trovato")
-        }
       }
 
         const newMov = await MovSrv.addMovimento(movObj, movEmail);
