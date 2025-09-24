@@ -25,7 +25,7 @@ passport.use(
              password: identity.credentials.hashedPassword
             };
             if (match) {
-                done(null, obj );
+                done(null, (obj as any) );
                 return;
             }
             done(null, false, { message: 'invalid password' });
