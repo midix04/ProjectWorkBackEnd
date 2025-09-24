@@ -26,13 +26,19 @@ export const AddMov = async (
             saldo: saldo,
             ContoCorrente: (req.user as any).id
         };
-        const newMov = await MovSrv.addMovimento(movObj, movEmail);
-        console.log("AAAAAAAAAAAAAAAAAAAAAA", (newMov.categoriaMovimento as any).CategoriaMovimentoID)
-        if((newMov.categoriaMovimento as any).CategoriaMovimentoID == 3 && newMov){
+        const iban = (req.body.ibanDestinatario)
+        let destinarioEmail
+        if(iban){
           const iban = (req.body.ibanDestinatario)
-          console.log(iban)
+          destinarioEmail = await MovSrv.findUser(iban!)
+        }
+        if(!destinarioEmail){
+          res.status(404).json("Iban non trovato")
+        }
+
+        const newMov = await MovSrv.addMovimento(movObj, movEmail);
+        if((newMov.categoriaMovimento as any).CategoriaMovimentoID == 3 && newMov){
           if(iban){
-          const destinarioEmail = await MovSrv.findUser(iban)
           if(destinarioEmail){
          const saldiBen = await MovSrv.getLastSaldo(destinarioEmail.id);
           const movObj=  {
@@ -43,7 +49,6 @@ export const AddMov = async (
              "descrizioneEstesa": "Bonifico in entrata",
             "ContoCorrente": destinarioEmail._id
         }
-        console.log("SDFDGOJFdgkesokigjofisgjrfgru")
          await MovSrv.addMovimento(movObj, destinarioEmail.email);
         }
           }

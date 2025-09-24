@@ -102,6 +102,7 @@ export class MovService {
 
   async findUser(iban: string) {
     const destinatario = await ContoCorrenteModel.findOne({ IBAN: iban }).select("email _id")
+    
     return destinatario;
 }
 
