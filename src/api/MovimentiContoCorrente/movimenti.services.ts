@@ -68,6 +68,25 @@ export class MovService {
   }
 
 
+   async getMovimentiCategoria(
+    contoCorrente: string | undefined,
+    n: number,
+    categoria: string
+  ): Promise<{ movimenti: MovimentiEntity[] }> {
+
+    const categoriaMovimento = await CategorieMovModel.findOne({CategoriaMovimentoID: categoria})
+    console.log(categoriaMovimento?.id)
+
+    const movimenti = await movimentiModel
+      .find({ contoCorrente: contoCorrente , categoriaMovimento: categoriaMovimento?.id})
+      .sort({ data: -1 })
+      .limit(n)
+      .select("data importo saldo CategoriaMovimento descrizioneEstesa")
+      .lean()
+      .populate("categoriaMovimento");
+
+    return { movimenti };
+  }
 
   async getMovimentiBetweenDates(
     contoCorrente: string,
@@ -101,16 +120,25 @@ export class MovService {
   }
 
   async findUser(iban: string) {
-    console.log("IBAN", iban)
-    if (iban == "" || iban.trim() === "") {
-    throw new Error("IBAN non valido");
-  }
     const destinatario = await ContoCorrenteModel.findOne({ IBAN: iban }).select("email _id")
     if(!destinatario || iban == ""){
-      throw new Error(`Iban non trovato`);
+      throw new Error("Iban non trovato");
     }
     return destinatario;
 }
+
+async getMov(
+    id: string | undefined,
+  ): Promise<MovimentiEntity | null> {
+    const movimenti = await movimentiModel
+      .findById(id)
+      .sort({ data: -1 })
+      .select("data importo saldo CategoriaMovimento descrizioneEstesa")
+      .lean()
+    
+
+    return  movimenti ;
+  }
 
 }
 

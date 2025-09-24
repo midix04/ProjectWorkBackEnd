@@ -60,8 +60,6 @@ export const AddMov = async (
     }
 };
 
-
-
 export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   req: Request,
   res: Response,
@@ -82,6 +80,26 @@ export const MovLast5List = async ( //5 movimenti in ordine decrescente di data
   }
 };
 
+export const MovLastNList = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+  const contoCorrenteID = (req.user as any)?.id;
+    const n = parseInt(req.query.n as string);
+    const { movimenti } = await MovSrv.getLastNMovimenti(contoCorrenteID!.toString(), n);
+    const saldo = await MovSrv.getLastSaldo((req.user as any).id);
+
+    res.json({
+      movimenti,
+      saldo,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const MovCatList = async (
   req: Request,
   res: Response,
@@ -89,19 +107,20 @@ export const MovCatList = async (
 ) => {
   try {
     const contoCorrente = (req.user as any).id;
-    const n = parseInt(req.query.n as string) || 5;
+    const n = parseInt(req.query.n as string);
     const categoriaMovimento = req.query.categoria as string | undefined; 
 
-    const { movimenti } = await MovSrv.getLastNMovimenti(contoCorrente!.toString(), n);
+    const {movimenti} = await MovSrv.getMovimentiCategoria(contoCorrente!.toString(), n, categoriaMovimento!);
 
-    const movimentiFiltrati = movimenti.filter(mov => 
+    //const { movimenti } = await MovSrv.getLastNMovimenti(contoCorrente!.toString(), n);
+
+    /*const movimentiFiltrati = movimenti.filter(mov => 
           (mov.categoriaMovimento as any).CategoriaMovimentoID === categoriaMovimento
-        )
+        )*/
+    console.log(movimenti)
 
-
-    res.json({
-      movimenti: movimentiFiltrati,
-    });
+    res.json(
+      movimenti);
   } catch (err) {
     next(err);
   }
@@ -145,9 +164,10 @@ export const exp2 = async (
     const categoria = req.query.categoria as string; // esempio: 'Stipendio'
 
     // Prendo gli ultimi n movimenti, eventualmente filtrati per categoria
-    const { movimenti} = await MovSrv.getLastNMovimenti(
+    const { movimenti} = await MovSrv.getMovimentiCategoria(
       contoCorrenteID!.toString(),
-      n
+      n,
+      categoria
     );
 
     // Esportazione CSV
@@ -200,7 +220,7 @@ export const exp1 = async (
 ): Promise<void> => {
   try {
     const contoCorrenteID = (req.user as any)?.id;
-    const n = parseInt(req.query.n as string) || 5; // default 5 movimenti
+    const n = parseInt(req.query.n as string); // default 5 movimenti
     const formato = req.query.formato as string; // 'csv' o 'xlsx'
 
     // Chiamata al service per prendere gli ultimi n movimenti
@@ -318,6 +338,20 @@ export const exp3 = async (
   } catch (err) {
     next(err);
   }
+};
+
+export const getMovimento = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const movimentoID = req.params['id'];
+    const movimento = await MovSrv.getMov(movimentoID);
+    res.json(omit(movimento, 'contoCorrente'));
+  } catch (err) {
+    next(err);
+  }
 };
 
 
