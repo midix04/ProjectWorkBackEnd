@@ -2,6 +2,7 @@
     "compilerOptions": {
       "target": "es6",
       "module": "commonjs",
+      "rootDir": "src",
       "outDir": "dist",
       "strict": true,
       "esModuleInterop": true,
@@ -11,6 +12,5 @@
       "resolveJsonModule": true,
       "strictPropertyInitialization": false,
       "experimentalDecorators": true,
-      "rootDir": "src"
     }
 }
