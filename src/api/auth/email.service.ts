@@ -1,16 +1,18 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: "SendGrid",
+  host: "smtp.sendgrid.net",
+  port: 587,       // usa 465 se vuoi TLS sicuro
+  secure: false,   // true se port 465
   auth: {
-    user: "apikey", // questo rimane fisso, non cambiare
-    pass: "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"
+    user: "apikey", 
+    pass: "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"
   }
 });
 
 export async function sendRegistrationEmail(to: string, nome: string) {
   const mailOptions = {
-    from: `"Il Tuo Servizio" <no-reply@iltuosito.com>`, // puoi usare un mittente verificato
+    from: `"Il Tuo Servizio" <thebubushow5@gmail.com>`, // deve essere un mittente verificato su SendGrid
     to,
     subject: "Conferma Registrazione",
     html: `<p>Ciao ${nome},</p>
