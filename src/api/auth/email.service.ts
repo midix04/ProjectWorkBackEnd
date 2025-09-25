@@ -1,23 +1,24 @@
-import sgMail from "@sendgrid/mail";
-import dotenv from 'dotenv';
+import nodemailer from "nodemailer";
 
-dotenv.config();
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+const transporter = nodemailer.createTransport({
+ service: "gmail",
+  auth: {
+    user: "nicotonin05@gmail.com", // email mittente
+    pass: "hyhshbiywoatzvbj",       // password o app password
+  },
+});
 
 export async function sendRegistrationEmail(to: string, nome: string) {
-  const msg = {
+  const mailOptions = {
+    from: `"Il Tuo Servizio" <nicotonin05@gmail.com>`,
     to,
-    from: "thebubushow5@gmail.com", // verificato su SendGrid
     subject: "Conferma Registrazione",
-    html: `<p>Ciao ${nome},</p>
-           <p>La tua registrazione è stata completata con successo!</p>
-           <p>Benvenuto nel nostro servizio!</p>`
+    html: `
+      <p>Ciao ${nome},</p>
+      <p>La tua registrazione è stata completata con successo!</p>
+      <p>Benvenuto nel nostro servizio!</p>
+    `,
   };
 
-  try {
-    await sgMail.send(msg);
-    console.log("Email inviata correttamente!");
-  } catch (err) {
-    console.error("Errore invio email:", err);
-  }
+  await transporter.sendMail(mailOptions);
 }
