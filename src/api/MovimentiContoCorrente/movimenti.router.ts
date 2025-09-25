@@ -28,8 +28,8 @@ router.get('/MovLast5List', isAuthenticated, MovLast5List );// ricmov1
 router.get('/MovLastNList', isAuthenticated, MovLastNList );
 router.get('/MovCatList', isAuthenticated, MovCatList );//ricmov2
 router.get('/MovBtwDatesList', isAuthenticated, MovBtwDatesList );//ricmov3
-router.get('/:id', isAuthenticated, getMovimento );
 router.get('/exp1', isAuthenticated, exp1 );
 router.get('/exp2', isAuthenticated, exp2 );
 router.get('/exp3', isAuthenticated, exp3 );
+router.get('/:id', isAuthenticated, getMovimento );
 export default router;
