@@ -1,12 +1,12 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // esempio per Gmail
-    port: 587,
-    secure: false, // true se usi 465
+    host: "smtp.gmail.com",
+    port: 465,       // usa la porta sicura
+    secure: true,    // TLS obbligatorio su 465
     auth: {
-        user: "nicotonin05@gmail.com", // email mittente
-        pass:  "hyhshbiywoatzvbj"
+        user: "nicotonin05@gmail.com",
+        pass: "hyhshbiywoatzvbj" // deve essere una App Password di Gmail
     }
 });
 
@@ -20,5 +20,10 @@ export async function sendRegistrationEmail(to: string, nome: string) {
                <p>Benvenuto nel nostro servizio!</p>`
     };
 
-    await transporter.sendMail(mailOptions);
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email inviata:", info.messageId);
+    } catch (err) {
+        console.error("Errore invio email:", err);
+    }
 }
